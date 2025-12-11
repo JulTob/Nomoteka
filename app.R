@@ -1,36 +1,39 @@
 library(shiny)
+library(bslib)
 
-ui <- fluidPage(
-    titlePanel("Name Vibe Checker:")
-    
-    textInput(
-                inputId = "input_name",
-                label   = "Type a name:",
-                placeholder = "e.g. Alejandro, Marco, Hans..."
-                )
-    
-    sidebarPanel(
-                textInput("nombre", "Name:", ""),
-                checkboxGroupInput(
-                                    "paises",
-                                    "Countries to compare:",
-                                    choices = c("Spain", "Germany", "Italy"),
-                                    selected = c("Spain", "Germany", "Italy")
-                                    )
-                )
+# Cargamos módulos
+source("R/mod_entropy.R")
+source("R/mod_generator.R")
 
-    mainPanel(
-                h3("Your name vibes score:"),
-                textOutput("summary"),
-                tableOutput("ranking_table"),
-                plotOutput("entropy_plot", height = "350px")
-                )
+tema_nomoteka <- bs_theme(
+    version   = 5,
+    bootswatch = "minty",
+    base_font  = "sans-serif",
+    heading_font = "serif",
+    primary   = "#6C5CE7",
+    secondary = "#00CEC9",
+    success   = "#55EFC4",
+    info      = "#81ECEC",
+    warning   = "#FAB1A0",
+    danger    = "#FF7675"
+)
 
+ui <- navbarPage(
+    "Nomoteka",
+    theme = tema_nomoteka,
+
+    tabPanel("Entropy Analyzer",
+        EntropyUI("entropy")
+    ),
+
+    tabPanel("Name Generator",
+        GeneratorUI("generator")
     )
+)
 
 server <- function(input, output, session) {
-    # Aquí irá la lógica reactiva
+    EntropyServer("entropy")
+    GeneratorServer("generator")
 }
 
 shinyApp(ui, server)
-
